@@ -1,8 +1,8 @@
 {
-  "name": "@kb-labs/plugin-template",
+  "name": "@kb-labs/policy-plugin",
   "version": "0.1.0",
   "private": true,
-  "description": "Reference plugin template for the KB Labs ecosystem with devkit-powered tooling.",
+  "description": "Enforces workspace-level development policies per category. Detects which category a repo belongs to, resolves applicable rules, and validates compliance.",
   "type": "module",
   "author": {
     "name": "Kirill Baranov",
