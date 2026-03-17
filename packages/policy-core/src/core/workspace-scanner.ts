@@ -64,7 +64,16 @@ function scanAllPackages(workspaceRoot: string, config: PolicyConfig): PackageIn
       const repoPath = path.join(topDirPath, repoEntry);
       const repoRelPath = `${topDir}/${repoEntry}`;
 
-      if (!fs.statSync(repoPath).isDirectory()) continue;
+      // FIX 4 (MEDIUM): statSync can throw on broken symlinks, permission errors,
+      // or race conditions where an entry disappears between readdirSync and statSync.
+      // Skip the entry rather than letting the error propagate and abort the scan.
+      let isDir: boolean;
+      try {
+        isDir = fs.statSync(repoPath).isDirectory();
+      } catch {
+        continue;
+      }
+      if (!isDir) continue;
 
       const categoryResult = detectCategory(repoRelPath, config);
 

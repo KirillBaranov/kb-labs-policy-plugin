@@ -9,7 +9,8 @@ const SNAPSHOTS_DIR = '.kb/api-snapshots';
  * Checks API backward compatibility by comparing exported symbols against a stored snapshot.
  * Also handles "no-breaking-without-major" rule (both rules map to this check).
  *
- * First run (no snapshot): creates snapshot and skips check with a warning.
+ * First run (no snapshot): warns and skips — does NOT auto-create a snapshot.
+ * Use updateSnapshots() to create/refresh snapshots explicitly.
  */
 export async function checkApiCompat(
   repoPath: string,
@@ -39,10 +40,13 @@ export async function checkApiCompat(
     const currentSymbols = extractSymbolsFromDist(pkgDir);
 
     if (!fs.existsSync(snapshotPath)) {
-      // First run: create snapshot, skip check
-      saveSnapshot(snapshotPath, pkgName, currentVersion, currentSymbols);
+      // FIX 2 (CRITICAL): removed the auto-saveSnapshot() call that was here.
+      // checkApiCompat is a read-only check function; writing files as a side-effect
+      // inside it violated the read/write separation and caused unexpected mutations
+      // during dry-run / CI read-only policy checks.
+      // Snapshots must be created explicitly via updateSnapshots().
       console.warn(
-        `[policy] api-compat: No snapshot for ${pkgName} — created initial snapshot. Run again after next release to enforce.`,
+        `[policy] api-compat: No snapshot for ${pkgName} — run 'policy update-snapshots' to create one.`,
       );
       continue;
     }
@@ -155,7 +159,13 @@ function saveSnapshot(snapshotPath: string, packageName: string, version: string
     symbols: Array.from(symbols).sort(),
     extractedAt: new Date().toISOString(),
   };
-  fs.writeFileSync(snapshotPath, JSON.stringify(snapshot, null, 2));
+  // FIX 5 (MEDIUM): guarded writeFileSync — a permission error or a full disk must
+  // not crash the entire update run; log a warning and continue instead.
+  try {
+    fs.writeFileSync(snapshotPath, JSON.stringify(snapshot, null, 2));
+  } catch (err) {
+    console.warn(`[policy] api-compat: Failed to write snapshot to ${snapshotPath}: ${(err as Error).message}`);
+  }
 }
 
 function parseMajor(version: string): number {

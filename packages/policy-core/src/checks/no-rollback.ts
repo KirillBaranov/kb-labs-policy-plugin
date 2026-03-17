@@ -1,6 +1,10 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { execSync } from 'node:child_process';
+// FIX 1 (CRITICAL): replaced execSync with spawnSync so packageName is passed as
+// a literal argument — never interpolated into a shell command string.
+// execSync with a template literal was vulnerable to shell injection if packageName
+// contained shell metacharacters (e.g. `$(cmd)`, backticks, semicolons).
+import { spawnSync } from 'node:child_process';
 import type { PolicyConfig, PolicyViolation } from '@kb-labs/policy-contracts';
 import semver from 'semver';
 
@@ -56,15 +60,15 @@ export async function checkNoRollback(
  * Returns the published npm version for a package, or null if not published / offline.
  */
 function getPublishedVersion(packageName: string): string | null {
-  try {
-    const output = execSync(`npm show ${packageName} version --silent 2>/dev/null`, {
-      timeout: 10000,
-      encoding: 'utf-8',
-    }).trim();
-    return semver.valid(output) ?? null;
-  } catch {
-    return null;
-  }
+  // spawnSync receives packageName as a discrete argv element — the OS never
+  // passes it through a shell, so metacharacters cannot be interpreted.
+  const result = spawnSync('npm', ['show', packageName, 'version', '--silent'], {
+    timeout: 10000,
+    encoding: 'utf-8',
+    stdio: ['ignore', 'pipe', 'ignore'],
+  });
+  if (result.error || result.status !== 0) return null;
+  return semver.valid(result.stdout.trim()) ?? null;
 }
 
 function findPackageJsonPaths(absRepoPath: string): string[] {

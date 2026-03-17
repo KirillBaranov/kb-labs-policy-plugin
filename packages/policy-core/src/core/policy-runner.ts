@@ -34,7 +34,17 @@ export async function runChecks(
         continue;
       }
 
-      const ruleViolations = await checkFn(repo.path, config, workspaceRoot);
+      // FIX 3 (CRITICAL): wrap each rule execution individually so that an
+      // unexpected throw from one check does not abort the remaining rules or
+      // prevent the report from being built for this (and subsequent) repos.
+      let ruleViolations: import('@kb-labs/policy-contracts').PolicyViolation[];
+      try {
+        ruleViolations = await checkFn(repo.path, config, workspaceRoot);
+      } catch (err) {
+        console.warn(`[policy] Rule '${rule}' threw an unexpected error (skipping): ${(err as Error).message}`);
+        continue;
+      }
+
       if (ruleViolations.length === 0) {
         passed.push(rule);
       } else {
