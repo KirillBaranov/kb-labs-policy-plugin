@@ -104,3 +104,38 @@ export function getViolationSummary(
 export function isPolicyPassing(report: CheckReport): boolean {
   return report.passed;
 }
+
+
+/**
+ * Merges multiple {@link CheckReport} objects into a single consolidated report.
+ *
+ * All `repos` arrays are concatenated in input order. The `summary` counters
+ * (`total`, `passed`, `failed`, `violations`) are recomputed from the merged
+ * repo list. The top-level `passed` flag is `true` only when the merged result
+ * has **zero** violations.
+ *
+ * Repos that share the same `path` across different input reports are kept as
+ * separate entries (concatenation, not deduplication). Callers who need
+ * dedup-by-path can post-process the returned `repos` array.
+ *
+ * @example
+ * ```ts
+ * import { mergeViolations } from '@kb-labs/policy-contracts';
+ *
+ * const combined = mergeViolations([reportA, reportB]);
+ * // combined.repos === [...reportA.repos, ...reportB.repos]
+ * // combined.passed === (combined.summary.violations === 0)
+ * ```
+ */
+export function mergeViolations(reports: CheckReport[]): CheckReport {
+  const repos = reports.flatMap((r) => r.repos);
+  const total = repos.length;
+  const failed = repos.filter((r) => r.violations.length > 0).length;
+  const passedRepos = total - failed;
+  const violations = repos.reduce((acc, r) => acc + r.violations.length, 0);
+  return {
+    passed: violations === 0,
+    repos,
+    summary: { total, passed: passedRepos, failed, violations },
+  };
+}
