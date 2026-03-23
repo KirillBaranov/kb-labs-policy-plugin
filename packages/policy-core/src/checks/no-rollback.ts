@@ -28,8 +28,8 @@ export async function checkNoRollback(
       continue;
     }
 
-    if (!json.name || !json.version) continue;
-    if (json.private) continue; // private packages are not published
+    if (!json.name || !json.version) {continue;}
+    if (json.private) {continue;} // private packages are not published
 
     const packageName = json.name;
     const currentVersion = json.version;
@@ -67,7 +67,7 @@ function getPublishedVersion(packageName: string): string | null {
     encoding: 'utf-8',
     stdio: ['ignore', 'pipe', 'ignore'],
   });
-  if (result.error || result.status !== 0) return null;
+  if (result.error || result.status !== 0) {return null;}
   return semver.valid(result.stdout.trim()) ?? null;
 }
 
@@ -75,10 +75,10 @@ function findPackageJsonPaths(absRepoPath: string): string[] {
   const results: string[] = [];
   for (const subdir of ['packages', 'apps']) {
     const subdirPath = path.join(absRepoPath, subdir);
-    if (!fs.existsSync(subdirPath)) continue;
+    if (!fs.existsSync(subdirPath)) {continue;}
     for (const entry of fs.readdirSync(subdirPath)) {
       const pkgJsonPath = path.join(subdirPath, entry, 'package.json');
-      if (fs.existsSync(pkgJsonPath)) results.push(pkgJsonPath);
+      if (fs.existsSync(pkgJsonPath)) {results.push(pkgJsonPath);}
     }
   }
   return results;

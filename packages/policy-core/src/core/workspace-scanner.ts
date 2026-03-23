@@ -35,14 +35,14 @@ export function getRepoPackageNames(workspaceRoot: string, repoPath: string): st
 
   for (const subdir of ['packages', 'apps']) {
     const subdirPath = path.join(absRepoPath, subdir);
-    if (!fs.existsSync(subdirPath)) continue;
+    if (!fs.existsSync(subdirPath)) {continue;}
 
     for (const entry of fs.readdirSync(subdirPath)) {
       const pkgJsonPath = path.join(subdirPath, entry, 'package.json');
-      if (!fs.existsSync(pkgJsonPath)) continue;
+      if (!fs.existsSync(pkgJsonPath)) {continue;}
       try {
         const json = JSON.parse(fs.readFileSync(pkgJsonPath, 'utf-8'));
-        if (json.name) names.push(json.name);
+        if (json.name) {names.push(json.name);}
       } catch {
         // ignore invalid package.json
       }
@@ -58,7 +58,7 @@ function scanAllPackages(workspaceRoot: string, config: PolicyConfig): PackageIn
 
   for (const topDir of topLevelDirs) {
     const topDirPath = path.join(workspaceRoot, topDir);
-    if (!fs.existsSync(topDirPath)) continue;
+    if (!fs.existsSync(topDirPath)) {continue;}
 
     for (const repoEntry of fs.readdirSync(topDirPath)) {
       const repoPath = path.join(topDirPath, repoEntry);
@@ -73,17 +73,17 @@ function scanAllPackages(workspaceRoot: string, config: PolicyConfig): PackageIn
       } catch {
         continue;
       }
-      if (!isDir) continue;
+      if (!isDir) {continue;}
 
       const categoryResult = detectCategory(repoRelPath, config);
 
       for (const subdir of ['packages', 'apps']) {
         const subdirPath = path.join(repoPath, subdir);
-        if (!fs.existsSync(subdirPath)) continue;
+        if (!fs.existsSync(subdirPath)) {continue;}
 
         for (const pkgEntry of fs.readdirSync(subdirPath)) {
           const pkgJsonPath = path.join(subdirPath, pkgEntry, 'package.json');
-          if (!fs.existsSync(pkgJsonPath)) continue;
+          if (!fs.existsSync(pkgJsonPath)) {continue;}
 
           try {
             const json = JSON.parse(fs.readFileSync(pkgJsonPath, 'utf-8'));

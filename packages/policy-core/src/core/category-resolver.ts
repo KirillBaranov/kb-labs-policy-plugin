@@ -9,7 +9,7 @@ function matchesPattern(repoPath: string, pattern: string): boolean {
   const normalizedPath = repoPath.replace(/\/$/, '');
   const normalizedPattern = pattern.replace(/\/$/, '');
 
-  if (normalizedPattern === normalizedPath) return true;
+  if (normalizedPattern === normalizedPath) {return true;}
 
   // Handle wildcard: "plugins/*" → matches "plugins/anything"
   if (normalizedPattern.endsWith('/*')) {

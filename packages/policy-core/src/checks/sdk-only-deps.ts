@@ -31,9 +31,9 @@ export async function checkSdkOnlyDeps(
     const relPath = path.relative(workspaceRoot, pkgJsonPath);
 
     for (const dep of deps) {
-      if (!dep.startsWith('@kb-labs/')) continue;
-      if (dep === '@kb-labs/sdk') continue;
-      if (internalPackageNames.has(dep)) continue;
+      if (!dep.startsWith('@kb-labs/')) {continue;}
+      if (dep === '@kb-labs/sdk') {continue;}
+      if (internalPackageNames.has(dep)) {continue;}
 
       violations.push({
         rule: 'sdk-only-deps',
@@ -53,10 +53,10 @@ function findPackageJsonPaths(absRepoPath: string): string[] {
   const results: string[] = [];
   for (const subdir of ['packages', 'apps']) {
     const subdirPath = path.join(absRepoPath, subdir);
-    if (!fs.existsSync(subdirPath)) continue;
+    if (!fs.existsSync(subdirPath)) {continue;}
     for (const entry of fs.readdirSync(subdirPath)) {
       const pkgJsonPath = path.join(subdirPath, entry, 'package.json');
-      if (fs.existsSync(pkgJsonPath)) results.push(pkgJsonPath);
+      if (fs.existsSync(pkgJsonPath)) {results.push(pkgJsonPath);}
     }
   }
   return results;

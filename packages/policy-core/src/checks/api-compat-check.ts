@@ -29,7 +29,7 @@ export async function checkApiCompat(
     } catch {
       continue;
     }
-    if (!json.name || !json.version) continue;
+    if (!json.name || !json.version) {continue;}
 
     const pkgName = json.name;
     const currentVersion = json.version;
@@ -65,7 +65,7 @@ export async function checkApiCompat(
 
     const removed: string[] = [];
     for (const sym of snapshotSymbols) {
-      if (!currentSymbols.has(sym)) removed.push(sym);
+      if (!currentSymbols.has(sym)) {removed.push(sym);}
     }
 
     if (removed.length > 0) {
@@ -103,7 +103,7 @@ export function updateSnapshots(repoPath: string, workspaceRoot: string): void {
     } catch {
       continue;
     }
-    if (!json.name || !json.version) continue;
+    if (!json.name || !json.version) {continue;}
 
     const pkgDir = path.dirname(pkgJsonPath);
     const symbols = extractSymbolsFromDist(pkgDir);
@@ -117,7 +117,7 @@ function extractSymbolsFromDist(pkgDir: string): Set<string> {
   const distDir = path.join(pkgDir, 'dist');
   const symbols = new Set<string>();
 
-  if (!fs.existsSync(distDir)) return symbols;
+  if (!fs.existsSync(distDir)) {return symbols;}
 
   const dtsFiles = findDtsFiles(distDir);
   for (const dtsFile of dtsFiles) {
@@ -176,10 +176,10 @@ function findPackageJsonPaths(absRepoPath: string): string[] {
   const results: string[] = [];
   for (const subdir of ['packages', 'apps']) {
     const subdirPath = path.join(absRepoPath, subdir);
-    if (!fs.existsSync(subdirPath)) continue;
+    if (!fs.existsSync(subdirPath)) {continue;}
     for (const entry of fs.readdirSync(subdirPath)) {
       const pkgJsonPath = path.join(subdirPath, entry, 'package.json');
-      if (fs.existsSync(pkgJsonPath)) results.push(pkgJsonPath);
+      if (fs.existsSync(pkgJsonPath)) {results.push(pkgJsonPath);}
     }
   }
   return results;

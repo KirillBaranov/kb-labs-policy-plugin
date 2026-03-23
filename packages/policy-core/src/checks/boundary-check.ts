@@ -20,7 +20,7 @@ export async function checkBoundary(
   const categoryResult = detectCategory(repoPath, config);
   const category = categoryResult.category;
 
-  if (!category) return violations; // no category = no boundary config
+  if (!category) {return violations;} // no category = no boundary config
 
   const boundaryRuleConfig = config.rules['boundary-check']?.config as
     | { allowed?: Record<string, string[]> }
@@ -49,11 +49,11 @@ export async function checkBoundary(
     const relPath = path.relative(workspaceRoot, pkgJsonPath);
 
     for (const dep of deps) {
-      if (!dep.startsWith('@kb-labs/')) continue;
-      if (internalPackageNames.has(dep)) continue; // own package = always ok
+      if (!dep.startsWith('@kb-labs/')) {continue;}
+      if (internalPackageNames.has(dep)) {continue;} // own package = always ok
 
       const depCategory = packageMap.get(dep);
-      if (depCategory === undefined) continue; // unknown package, skip
+      if (depCategory === undefined || depCategory === null) {continue;} // unknown package, skip
 
       if (!allowedCategories.includes(depCategory)) {
         violations.push({
@@ -75,10 +75,10 @@ function findPackageJsonPaths(absRepoPath: string): string[] {
   const results: string[] = [];
   for (const subdir of ['packages', 'apps']) {
     const subdirPath = path.join(absRepoPath, subdir);
-    if (!fs.existsSync(subdirPath)) continue;
+    if (!fs.existsSync(subdirPath)) {continue;}
     for (const entry of fs.readdirSync(subdirPath)) {
       const pkgJsonPath = path.join(subdirPath, entry, 'package.json');
-      if (fs.existsSync(pkgJsonPath)) results.push(pkgJsonPath);
+      if (fs.existsSync(pkgJsonPath)) {results.push(pkgJsonPath);}
     }
   }
   return results;

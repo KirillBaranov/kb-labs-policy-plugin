@@ -31,7 +31,7 @@ export default defineCommand({
           repos: [],
           summary: { total: 0, passed: 0, failed: 0, violations: 0 },
         };
-        if (flags.json) ctx.ui.json?.({ passed: false, error: 'No policies config' });
+        if (flags.json) {ctx.ui.json?.({ passed: false, error: 'No policies config' });}
         return { exitCode: 1, report: emptyReport };
       }
 
@@ -71,7 +71,7 @@ function renderHumanReport(ctx: PluginContextV3, report: CheckReport): void {
     for (const violation of repo.violations) {
       lines.push(`  ❌ ${violation.rule}`);
       lines.push(`     ${violation.message}`);
-      if (violation.detail) lines.push(`     → ${violation.detail}`);
+      if (violation.detail) {lines.push(`     → ${violation.detail}`);}
     }
     for (const passed of repo.passed) {
       lines.push(`  ✅ ${passed}`);
