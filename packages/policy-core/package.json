@@ -1,8 +1,7 @@
 {
   "name": "@kb-labs/policy-core",
-  "version": "0.1.0",
+  "version": "0.5.0",
   "type": "module",
-  "private": true,
   "description": "Core implementation for KB Labs policy plugin. Category resolver, policy runner, and checks.",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
