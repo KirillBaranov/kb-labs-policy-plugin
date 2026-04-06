@@ -1,6 +1,6 @@
 {
   "name": "@kb-labs/policy-plugin",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Enforces workspace-level development policies per category. Detects which category a repo belongs to, resolves applicable rules, and validates compliance.",
   "type": "module",
   "author": {
